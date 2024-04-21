@@ -1,12 +1,19 @@
 
 Feature: Customer Transaction 
 
-Scenario: Deposit amount to his account
+@Customer @Smoke
+Scenario Outline: Deposit amount to his account
 
-Given user logins with "Harry Potter" credentials
+Given user logins with <name> credentials
 And user is in home page
-When he deposits 500 to his account
+When he deposits <amount> to his account
 Then Account balance should get updated
+
+Examples:
+|    name    |amount|
+|Harry Potter| 500  |
+|Ron Weasly  | 200  | 
+
 
 
 

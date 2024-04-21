@@ -4,10 +4,13 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
+import PageObjects.CustomerLoginPageObject;
+import PageObjects.PageObjectManager;
 import Utils.TestSetupContext;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -28,20 +31,26 @@ public class CustomerLoginPage
 	}
 	
 	
-	@Given("user logins with {string} credentials")
+	@Given("^user logins with (.*) credentials$")
 	public void user_logins_with_credentials(String Name) throws InterruptedException {
 	    
-		
-		testSetupContext.driver = new ChromeDriver();
-		testSetupContext.driver.get("https://www.way2automation.com/angularjs-protractor/banking/#/login");
-		testSetupContext.driver.findElement(By.xpath("//button[contains(text(),'Customer Login')]")).click();
+		//CustomerLoginPageObject cl= new CustomerLoginPageObject(testSetupContext.driver);
+		//PageObjectManager pom= new PageObjectManager(testSetupContext.driver);
+		//CustomerLoginPageObject cl=pom.getCustomerLoginPageObject();
+		CustomerLoginPageObject cl=testSetupContext.pom.getCustomerLoginPageObject();
+		Thread.sleep(2000);
+		cl.clickCustomerLoginButton();
 		testSetupContext.actualName=Name;
 		Thread.sleep(2000);
-		Select sct = new Select(testSetupContext.driver.findElement(By.id("userSelect")));
-		sct.selectByVisibleText(Name);
-		testSetupContext.driver.findElement(By.xpath("//button[text()='Login']")).click();
+		cl.clickLoginDropdown();
+		testSetupContext.genericUtils.SelectFromDropdown(cl.FindDropdown(), Name);
+        cl.ClickLoginButton();
+        
+        
 	    
 	}
+	
+	
 
 
 }

@@ -4,6 +4,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
+import PageObjects.CustomerHomePageObject;
+import PageObjects.PageObjectManager;
 import Utils.TestSetupContext;
 
 import org.openqa.selenium.By;
@@ -21,6 +23,7 @@ public class CustomerHomePage
 	public int originalAmount;
 	public int depositAmount;
 	 TestSetupContext testSetupContext;
+	 PageObjectManager pom;
 	
 	public CustomerHomePage(TestSetupContext testSetupContext)
 	{
@@ -32,22 +35,25 @@ public class CustomerHomePage
 	@Given("user is in home page")
 	public void user_is_in_home_page() throws InterruptedException {
 		
+		CustomerHomePageObject chp=testSetupContext.pom.getCustomerHomePageObject();
 		Thread.sleep(2000);
 	    
-	  String Customename= testSetupContext.driver.findElement(By.xpath("//span[text()='Harry Potter']")).getText();
+	  String Customename= chp.getPageTitle();
 	  
 	  Assert.assertEquals(testSetupContext.actualName, Customename);
 	}
 	
-	@When("he deposits {int} to his account")
+	@When("^he deposits (.*) to his account$")
 	public void he_deposits_to_his_account(Integer amount) throws InterruptedException {
+		
+		CustomerHomePageObject chp=testSetupContext.pom.getCustomerHomePageObject();
 		depositAmount=amount;
-		testSetupContext.driver.findElement(By.xpath("//button[contains(text(),'Deposit')]")).click();
-	    originalAmount=Integer.parseInt(testSetupContext.driver.findElement(By.xpath("//div[@ng-hide='noAccount'][1]//strong[2]")).getText());
+		chp.clickDepositTab();
+	    originalAmount=Integer.parseInt(chp.getBalanceAmount());
 	    System.out.println(originalAmount);
 	    Thread.sleep(2000);
-	    testSetupContext.driver.findElement(By.xpath("//input[@type='number']")).sendKeys(amount.toString());
-	    testSetupContext.driver.findElement(By.xpath("//button[@type='submit']")).click();
+	    chp.enterAmount(amount);
+	    chp.clickSubmitButton();
 	    Thread.sleep(2000);
 	    System.out.println(depositAmount);
 	    
@@ -55,8 +61,9 @@ public class CustomerHomePage
 	}
 	@Then("Account balance should get updated")
 	public void account_balance_should_get_updated() {
-	    
-		int UpdatedAmount=Integer.parseInt(testSetupContext.driver.findElement(By.xpath("//div[@ng-hide='noAccount'][1]//strong[2]")).getText());
+		
+		CustomerHomePageObject chp=testSetupContext.pom.getCustomerHomePageObject();
+		int UpdatedAmount=Integer.parseInt(chp.getBalanceAmount());
 		System.out.println(UpdatedAmount);
 		
 		int DifferenceAmount =UpdatedAmount-originalAmount;
